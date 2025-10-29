@@ -1,0 +1,28 @@
+=== XMSS reference benchmark run ===
+Started: Wed Oct 29 10:14:05 PM UTC 2025
+
+Iterations: 10
+========================================
+Testing variant: XMSS-SHA2_10_256 (XMSSMT=0)
+Build start: Wed Oct 29 10:14:05 PM UTC 2025
+Running: /usr/bin/gcc -DXMSS_VARIANT=\"XMSS-SHA2_10_256\" -DNTESTS=10 -w -g -O3 -o test/xmss_timing params.c hash.c fips202.c hash_address.c randombytes.c wots.c xmss.c xmss_core_fast.c xmss_commons.c utils.c test/xmss_timing.c -lcrypto
+Running: ./test/xmss_timing
+Testing variant XMSS-SHA2_10_256
+Running 10 iterations
+
+Running 10 iterations...
+
+Results for XMSS-SHA2_10_256
+Average times over 10 iterations:
+Key Generation: 1762.57 ms
+Signing:       2.52 ms
+Verification:  0.94 ms
+
+Sizes:
+Signature: 2500 bytes (2.44 KiB)
+Public key: 64 bytes (0.06 KiB)
+Secret key: 1373 bytes (1.34 KiB)
+Cleaning binary
+Build end: Wed Oct 29 10:14:24 PM UTC 2025
+
+Finished: Wed Oct 29 10:14:24 PM UTC 2025

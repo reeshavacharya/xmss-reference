@@ -1,3 +1,4 @@
+#define _POSIX_C_SOURCE 199309L
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -9,7 +10,7 @@
 #define XMSS_MLEN 32
 
 #ifndef XMSS_SIGNATURES
-    #define XMSS_SIGNATURES 16
+    #define XMSS_SIGNATURES 100
 #endif
 
 #ifdef XMSSMT
@@ -118,11 +119,11 @@ int main()
 
     printf("Generating keypair.. ");
 
-    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start);
+    clock_gettime(CLOCK_MONOTONIC, &start);
     t0 = cpucycles();
     XMSS_KEYPAIR(pk, sk, oid);
     t1 = cpucycles();
-    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &stop);
+    clock_gettime(CLOCK_MONOTONIC, &stop);
     result = (stop.tv_sec - start.tv_sec) * 1e6 + (stop.tv_nsec - start.tv_nsec) / 1e3;
     printf("took %lf us (%.2lf sec), %llu cycles\n", result, result / 1e6, t1 - t0);
 
@@ -134,11 +135,17 @@ int main()
     }
     print_results(t, XMSS_SIGNATURES);
 
-    printf("Verifying %d signatures..\n", XMSS_SIGNATURES);
+    printf("Creating and verifying %d signatures..\n", XMSS_SIGNATURES);
 
+    // Sign and verify in pairs to avoid large memory allocation
     for (i = 0; i < XMSS_SIGNATURES; i++) {
+        XMSS_SIGN(sk, sm, &smlen, m, XMSS_MLEN);
         t[i] = cpucycles();
         ret |= XMSS_SIGN_OPEN(mout, &mlen, sm, smlen, pk);
+        if (ret) {
+            printf("Verification failed at signature %d\n", i);
+            break;
+        }
     }
     print_results(t, XMSS_SIGNATURES);
 
